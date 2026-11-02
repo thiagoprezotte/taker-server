@@ -16,6 +16,7 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1075.0",
     "@fastify/aws-lambda": "^6.4.2",
+    "@fastify/static": "^9.3.0",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
