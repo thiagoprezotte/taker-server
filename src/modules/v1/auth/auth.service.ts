@@ -113,6 +113,26 @@ export class AuthService {
     };
   }
 
+  async forgotPassword({ email }: { email: string }): Promise<void> {
+    const user = await this.usersService.searchByEmail({ email });
+    if (!user) throw new BadRequestException("User not found");
+    await this.userPoolClient.forgotPassword({ email });
+  }
+
+  async resetPassword({
+    email,
+    code,
+    password,
+  }: {
+    email: string;
+    code: string;
+    password: string;
+  }): Promise<void> {
+    const user = await this.usersService.searchByEmail({ email });
+    if (!user) throw new BadRequestException("User not found");
+    await this.userPoolClient.confirmForgotPassword({ email, code, password });
+  }
+
   private decodeUsername(accessToken: string): string {
     try {
       const payload = accessToken.split(".")[1] ?? "";

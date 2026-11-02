@@ -5,9 +5,12 @@ import {
   SignUpCommand,
   ConfirmSignUpCommand,
   ResendConfirmationCodeCommand,
+  ForgotPasswordCommand,
+  ConfirmForgotPasswordCommand,
   InitiateAuthCommand,
   GetUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { withCognitoError } from "./cognito-errors";
 
 export interface IdentityClaims {
   email: string;
@@ -97,6 +100,36 @@ export class UserPoolClient {
     return this.client.send(command);
   }
 
+  async forgotPassword({ email }: { email: string }) {
+    const secretHash = this.getSecretHash(email);
+    const command = new ForgotPasswordCommand({
+      ClientId: this.clientId,
+      Username: email,
+      SecretHash: secretHash,
+    });
+    return withCognitoError(() => this.client.send(command));
+  }
+
+  async confirmForgotPassword({
+    email,
+    code,
+    password,
+  }: {
+    email: string;
+    code: string;
+    password: string;
+  }) {
+    const secretHash = this.getSecretHash(email);
+    const command = new ConfirmForgotPasswordCommand({
+      ClientId: this.clientId,
+      Username: email,
+      ConfirmationCode: code,
+      Password: password,
+      SecretHash: secretHash,
+    });
+    return withCognitoError(() => this.client.send(command));
+  }
+
   async initiateAuth({ email, password }: { email: string; password: string }) {
     const secretHash = this.getSecretHash(email);
     const command = new InitiateAuthCommand({
@@ -111,9 +144,6 @@ export class UserPoolClient {
     return this.client.send(command);
   }
 
-  // Cognito verifies REFRESH_TOKEN_AUTH's SECRET_HASH against the user's
-  // internal username (not the email alias), so callers must pass the
-  // access token's `username` claim here.
   async refreshAuth({
     refreshToken,
     username,

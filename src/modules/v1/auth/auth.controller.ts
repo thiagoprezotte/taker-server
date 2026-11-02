@@ -27,12 +27,16 @@ import {
   PostAuthCallbackBodyDto,
   postAuthConfirmBodySchema,
   PostAuthConfirmBodyDto,
+  postAuthForgotPasswordBodySchema,
+  PostAuthForgotPasswordBodyDto,
   postAuthLoginBodySchema,
   PostAuthLoginBodyDto,
   postAuthRefreshBodySchema,
   PostAuthRefreshBodyDto,
   postAuthResendBodySchema,
   PostAuthResendBodyDto,
+  postAuthResetPasswordBodySchema,
+  PostAuthResetPasswordBodyDto,
   postAuthSignupBodySchema,
   PostAuthSignupBodyDto,
 } from "./auth.dto";
@@ -111,5 +115,21 @@ export class AuthController {
   refresh(@Body() body: PostAuthRefreshBodyDto) {
     const { refreshToken, accessToken } = body;
     return this.authService.refresh({ refreshToken, accessToken });
+  }
+
+  @Post("forgot")
+  @ApiOperation({ summary: "Send a password reset code to the account email" })
+  @ApiBody({ schema: postAuthForgotPasswordBodySchema })
+  async forgotPassword(@Body() body: PostAuthForgotPasswordBodyDto): Promise<void> {
+    const { email } = body;
+    await this.authService.forgotPassword({ email });
+  }
+
+  @Post("reset")
+  @ApiOperation({ summary: "Set a new password with the emailed reset code" })
+  @ApiBody({ schema: postAuthResetPasswordBodySchema })
+  async resetPassword(@Body() body: PostAuthResetPasswordBodyDto): Promise<void> {
+    const { email, code, password } = body;
+    await this.authService.resetPassword({ email, code, password });
   }
 }

@@ -1,4 +1,6 @@
 import "reflect-metadata";
+import awsLambdaFastify, { PromiseHandler } from "@fastify/aws-lambda";
+import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
@@ -8,7 +10,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
 
-async function bootstrap() {
+async function createApp(): Promise<NestFastifyApplication> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ trustProxy: true })
@@ -35,6 +37,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api-docs", app, document);
 
+  return app;
+}
+
+async function bootstrap() {
+  const app = await createApp();
+
   const port = parseInt(process.env.PORT ?? "3000", 10);
   await app.listen(port, "0.0.0.0");
 
@@ -42,4 +50,17 @@ async function bootstrap() {
   console.log(`API docs available at http://localhost:${port}/api-docs`);
 }
 
-bootstrap();
+async function createProxy(): Promise<PromiseHandler> {
+  const app = await createApp();
+  await app.init();
+  return awsLambdaFastify(app.getHttpAdapter().getInstance());
+}
+
+let proxy: Promise<PromiseHandler> | undefined;
+
+export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {
+  proxy ??= createProxy();
+  return (await proxy)(event, context);
+};
+
+if (process.env.NODE_ENV === "local") bootstrap();

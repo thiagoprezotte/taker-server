@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createZodDto } from "../../../core/dto/zod-dto";
 
-// zod v4 native OpenAPI 3.0 JSON Schema for @nestjs/swagger `schema` options.
 const toOpenApiSchema = <T extends z.ZodType>(schema: T): any =>
   z.toJSONSchema(schema, { target: "openapi-3.0" });
 

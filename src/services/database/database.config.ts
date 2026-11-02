@@ -19,7 +19,12 @@ export function typeOrmConfig(): TypeOrmModuleOptions {
     database: process.env.DB_NAME ?? "inv_db",
     synchronize: false,
     logging: ["error", "warn", "schema", "migration"],
-    entities: [User, Topic, Snapshot, Transaction],
+    entities: [
+      User,
+      Topic,
+      Snapshot,
+      Transaction,
+    ],
     migrations: [],
     subscribers: [],
   };

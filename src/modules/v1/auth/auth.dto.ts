@@ -2,9 +2,6 @@ import { z } from "zod";
 import { createZodDto } from "../../../core/dto/zod-dto";
 import { AuthMethodsOptions } from "../../../core/types/auth.types";
 
-// zod v4 native OpenAPI 3.0 JSON Schema, consumed by @nestjs/swagger decorators.
-// Typed as `any` so it drops into @ApiBody/@ApiResponse `schema` without importing
-// swagger's internal SchemaObject type (blocked by its package exports map).
 const toOpenApiSchema = <T extends z.ZodType>(schema: T): any =>
   z.toJSONSchema(schema, { target: "openapi-3.0" });
 
@@ -73,3 +70,17 @@ const postAuthRefreshBody = z.object({
 });
 export class PostAuthRefreshBodyDto extends createZodDto(postAuthRefreshBody) {}
 export const postAuthRefreshBodySchema = toOpenApiSchema(postAuthRefreshBody);
+
+const postAuthForgotPasswordBody = z.object({
+  email: z.email(),
+});
+export class PostAuthForgotPasswordBodyDto extends createZodDto(postAuthForgotPasswordBody) {}
+export const postAuthForgotPasswordBodySchema = toOpenApiSchema(postAuthForgotPasswordBody);
+
+const postAuthResetPasswordBody = z.object({
+  email: z.email(),
+  code: z.string(),
+  password: z.string().min(8),
+});
+export class PostAuthResetPasswordBodyDto extends createZodDto(postAuthResetPasswordBody) {}
+export const postAuthResetPasswordBodySchema = toOpenApiSchema(postAuthResetPasswordBody);

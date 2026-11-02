@@ -7,6 +7,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
+    "cdk:deploy": "npm run build && cd infra && npx cdk deploy --require-approval never",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
     "db:logs": "docker-compose logs -f postgres",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1075.0",
+    "@fastify/aws-lambda": "^6.4.2",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
@@ -29,8 +31,10 @@
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
+    "@types/aws-lambda": "^8.10.164",
     "@types/node": "^20.8.0",
     "@types/pg": "^8.16.0",
+    "esbuild": "^0.28.2",
     "source-map-support": "^0.5.21",
     "typescript": "^5.2.2"
   }

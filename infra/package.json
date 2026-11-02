@@ -1,0 +1,25 @@
+{
+  "name": "inv-server-infra",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc --noEmit",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "diff": "cdk diff"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "dotenv": "^16.4.5",
+    "aws-cdk": "^2.170.0",
+    "aws-cdk-lib": "^2.170.0",
+    "constructs": "^10.4.2",
+    "esbuild": "~0.21.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.2.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
