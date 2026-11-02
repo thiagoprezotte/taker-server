@@ -19,10 +19,6 @@ export class AuthService {
     private readonly usersService: UsersService
   ) {}
 
-  buildAuthorizeUrl({ provider }: { provider: string }): string {
-    return this.userPoolClient.buildAuthorizeUrl({ provider });
-  }
-
   async signUp({
     email,
     password,
@@ -75,16 +71,6 @@ export class AuthService {
       accessToken: result.AuthenticationResult.AccessToken,
       refreshToken: result.AuthenticationResult.RefreshToken ?? null,
       expiresIn: result.AuthenticationResult.ExpiresIn ?? 3600,
-    };
-  }
-
-  async exchangeCode({ code }: { code: string }): Promise<AuthSession> {
-    const { accessToken, refreshToken, expiresIn } =
-      await this.userPoolClient.exchangeCode(code);
-    return {
-      accessToken,
-      refreshToken: refreshToken ?? null,
-      expiresIn,
     };
   }
 

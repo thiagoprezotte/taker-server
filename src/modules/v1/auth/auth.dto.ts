@@ -20,16 +20,6 @@ const authSessionDtoSchema = z.object({
 });
 export const authSessionResponseSchema = toOpenApiSchema(authSessionDtoSchema);
 
-const getAuthUrlParams = z.object({
-  provider: z.string(),
-});
-export class GetAuthUrlParamsDto extends createZodDto(getAuthUrlParams) {}
-
-const getAuthUrlResponse = z.object({
-  url: z.string(),
-});
-export const getAuthUrlResponseSchema = toOpenApiSchema(getAuthUrlResponse);
-
 const postAuthSignupBody = z.object({
   email: z.email(),
   password: z.string().min(8),
@@ -57,12 +47,6 @@ const postAuthLoginBody = z.object({
 });
 export class PostAuthLoginBodyDto extends createZodDto(postAuthLoginBody) {}
 export const postAuthLoginBodySchema = toOpenApiSchema(postAuthLoginBody);
-
-const postAuthCallbackBody = z.object({
-  code: z.string(),
-});
-export class PostAuthCallbackBodyDto extends createZodDto(postAuthCallbackBody) {}
-export const postAuthCallbackBodySchema = toOpenApiSchema(postAuthCallbackBody);
 
 const postAuthRefreshBody = z.object({
   refreshToken: z.string(),

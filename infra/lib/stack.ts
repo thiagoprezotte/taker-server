@@ -9,17 +9,17 @@ import type { Construct } from "constructs";
 
 const SERVER_ROOT = path.join(__dirname, "..", "..");
 
-export interface InvServerStackProps extends cdk.StackProps {
+export interface TakerServerStackProps extends cdk.StackProps {
   readonly lambdaEnvironment?: Record<string, string>;
 }
 
-export class InvServerStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: InvServerStackProps) {
+export class TakerServerStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: TakerServerStackProps) {
     const { lambdaEnvironment: lambdaEnvExtra, ...stackProps } = props ?? {};
     super(scope, id, stackProps);
 
-    const apiHandler = new NodejsFunction(this, "InvServer", {
-      functionName: "InvServer",
+    const apiHandler = new NodejsFunction(this, "TakerServer", {
+      functionName: "TakerServer",
       runtime: lambda.Runtime.NODEJS_24_X,
       entry: path.join(SERVER_ROOT, "dist", "main.js"),
       handler: "handler",
@@ -48,11 +48,11 @@ export class InvServerStack extends cdk.Stack {
       },
     });
 
-    const integration = new HttpLambdaIntegration("InvApiIntegration", apiHandler);
+    const integration = new HttpLambdaIntegration("TakerApiIntegration", apiHandler);
 
-    const httpApi = new apigwv2.HttpApi(this, "InvApi", {
-      apiName: "InvApi",
-      description: "HTTP API → NestJS Lambda (Inv)",
+    const httpApi = new apigwv2.HttpApi(this, "TakerApi", {
+      apiName: "TakerApi",
+      description: "HTTP API → NestJS Lambda (Taker)",
       corsPreflight: {
         allowHeaders: ["Content-Type", "Authorization"],
         allowMethods: [apigwv2.CorsHttpMethod.ANY],

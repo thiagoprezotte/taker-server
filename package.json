@@ -1,5 +1,5 @@
 {
-  "name": "inv-server",
+  "name": "taker-server",
   "version": "1.0.0",
   "main": "dist/main.js",
   "scripts": {

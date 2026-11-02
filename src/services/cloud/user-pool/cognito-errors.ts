@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 
-export function mapCognitoError(error: unknown): never {
+function mapCognitoError(error: unknown): never {
   if (error instanceof HttpException) throw error;
 
   const name =
@@ -39,18 +39,6 @@ export function mapCognitoError(error: unknown): never {
       );
     default:
       break;
-  }
-
-  if (error instanceof Error) {
-    if (error.message.includes("Token exchange failed")) {
-      throw new BadRequestException(error.message);
-    }
-    if (error.message.includes("Unsupported provider")) {
-      throw new BadRequestException(error.message);
-    }
-    if (error.message === "Authentication failed") {
-      throw new UnauthorizedException("Invalid email or password");
-    }
   }
 
   throw new InternalServerErrorException(

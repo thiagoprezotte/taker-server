@@ -36,9 +36,6 @@ jobs:
   validate:
     name: Validate
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCOUNT_ID: "000000000000"
-      AWS_REGION: us-east-1
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -84,12 +81,9 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      COGNITO_REGION: ${{ secrets.COGNITO_REGION }}
-      COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
+      CLOUD_REGION: ${{ secrets.CLOUD_REGION }}
       COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
       COGNITO_CLIENT_SECRET: ${{ secrets.COGNITO_CLIENT_SECRET }}
-      COGNITO_DOMAIN: ${{ secrets.COGNITO_DOMAIN }}
-      COGNITO_REDIRECT_URI: ${{ secrets.COGNITO_REDIRECT_URI }}
       CLOUD_ACCESS_KEY_ID: ${{ secrets.CLOUD_ACCESS_KEY_ID }}
       CLOUD_SECRET_ACCESS_KEY: ${{ secrets.CLOUD_SECRET_ACCESS_KEY }}
     steps:
@@ -127,5 +121,5 @@ jobs:
         working-directory: infra
 
       - name: CDK deploy
-        run: npx cdk deploy InvServerStack --require-approval never
+        run: npx cdk deploy TakerServerStack --require-approval never
         working-directory: infra

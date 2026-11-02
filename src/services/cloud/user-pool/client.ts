@@ -12,26 +12,17 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import { withCognitoError } from "./cognito-errors";
 
-export interface IdentityClaims {
-  email: string;
-  name: string;
-}
-
 @Injectable()
 export class UserPoolClient {
   private client: CognitoIdentityProviderClient;
   private clientId: string;
   private clientSecret: string;
-  private domain: string;
   private region: string;
-  private redirectUri: string;
 
   constructor() {
     this.clientId = process.env.COGNITO_CLIENT_ID!;
     this.clientSecret = process.env.COGNITO_CLIENT_SECRET!;
-    this.domain = process.env.COGNITO_DOMAIN!;
-    this.region = process.env.COGNITO_REGION!;
-    this.redirectUri = process.env.COGNITO_REDIRECT_URI!;
+    this.region = process.env.CLOUD_REGION!;
 
     const keyId = process.env.CLOUD_ACCESS_KEY_ID!;
     const secret = process.env.CLOUD_SECRET_ACCESS_KEY!;
@@ -47,13 +38,6 @@ export class UserPoolClient {
       .createHmac("sha256", this.clientSecret)
       .update(username + this.clientId)
       .digest("base64");
-  }
-
-  private basicAuthHeader(): Record<string, string> {
-    const credentials = Buffer.from(
-      `${this.clientId}:${this.clientSecret}`
-    ).toString("base64");
-    return { Authorization: `Basic ${credentials}` };
   }
 
   async signUp({
@@ -166,65 +150,5 @@ export class UserPoolClient {
   async getUser({ accessToken }: { accessToken: string }) {
     const command = new GetUserCommand({ AccessToken: accessToken });
     return this.client.send(command);
-  }
-
-  buildAuthorizeUrl({ provider }: { provider: string }): string {
-    const socialProviders: Record<string, string> = {
-      google: "Google",
-      linkedin: "LinkedIn",
-    };
-    const identityProvider = socialProviders[provider.toLowerCase()];
-    if (!identityProvider) {
-      throw new Error(`Unsupported provider: ${provider}`);
-    }
-
-    const params = new URLSearchParams({
-      response_type: "code",
-      client_id: this.clientId,
-      redirect_uri: this.redirectUri,
-      identity_provider: identityProvider,
-      scope: "openid email profile",
-    });
-
-    return `${this.domain}/oauth2/authorize?${params.toString()}`;
-  }
-
-  async exchangeCode(code: string): Promise<{
-    accessToken: string;
-    refreshToken?: string;
-    expiresIn: number;
-  }> {
-    const body = new URLSearchParams({
-      grant_type: "authorization_code",
-      client_id: this.clientId,
-      code,
-      redirect_uri: this.redirectUri,
-    });
-
-    const response = await fetch(`${this.domain}/oauth2/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        ...this.basicAuthHeader(),
-      },
-      body: body.toString(),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Token exchange failed: ${await response.text()}`);
-    }
-
-    const data = (await response.json()) as {
-      access_token: string;
-      id_token: string;
-      refresh_token?: string;
-      expires_in: number;
-    };
-
-    return {
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-      expiresIn: data.expires_in,
-    };
   }
 }

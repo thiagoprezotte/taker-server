@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 import * as cdk from "aws-cdk-lib";
-import { InvServerStack } from "../lib/stack";
+import { TakerServerStack } from "../lib/stack";
 
 const LAMBDA_ENV_KEYS = [
   "DB_HOST",
@@ -12,14 +12,11 @@ const LAMBDA_ENV_KEYS = [
   "DB_NAME",
   "DB_USER",
   "DB_PASSWORD",
-  "COGNITO_REGION",
-  "COGNITO_USER_POOL_ID",
-  "COGNITO_CLIENT_ID",
-  "COGNITO_CLIENT_SECRET",
-  "COGNITO_DOMAIN",
-  "COGNITO_REDIRECT_URI",
+  "CLOUD_REGION",
   "CLOUD_ACCESS_KEY_ID",
   "CLOUD_SECRET_ACCESS_KEY",
+  "COGNITO_CLIENT_ID",
+  "COGNITO_CLIENT_SECRET",
 ] as const;
 
 function lambdaEnvFromProcess(): Record<string, string> {
@@ -35,7 +32,7 @@ function lambdaEnvFromProcess(): Record<string, string> {
 
 const app = new cdk.App();
 
-new InvServerStack(app, "InvServerStack", {
+new TakerServerStack(app, "TakerServerStack", {
   env: {
     account: process.env.AWS_ACCOUNT_ID,
     region: process.env.AWS_REGION,
