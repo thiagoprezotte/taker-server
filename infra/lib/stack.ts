@@ -42,6 +42,7 @@ export class TakerServerStack extends cdk.Stack {
           "class-transformer",
           "class-validator",
         ],
+        nodeModules: ["swagger-ui-dist"],
         minify: false,
         keepNames: true,
         sourceMap: true,
