@@ -81,9 +81,9 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      CLOUD_REGION: ${{ secrets.CLOUD_REGION }}
       COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
       COGNITO_CLIENT_SECRET: ${{ secrets.COGNITO_CLIENT_SECRET }}
+      CLOUD_REGION: ${{ secrets.CLOUD_REGION }}
       CLOUD_ACCESS_KEY_ID: ${{ secrets.CLOUD_ACCESS_KEY_ID }}
       CLOUD_SECRET_ACCESS_KEY: ${{ secrets.CLOUD_SECRET_ACCESS_KEY }}
     steps:
@@ -112,12 +112,12 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.CLOUD_REGION }}
+          aws-access-key-id: ${{ secrets.CLOUD_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CLOUD_SECRET_ACCESS_KEY }}
 
       - name: CDK bootstrap
-        run: npx cdk bootstrap aws://${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.AWS_REGION }} --require-approval never
+        run: npx cdk bootstrap aws://${{ secrets.CLOUD_ACCOUNT_ID }}/${{ secrets.CLOUD_REGION }} --require-approval never
         working-directory: infra
 
       - name: CDK deploy
