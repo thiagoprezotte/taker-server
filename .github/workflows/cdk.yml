@@ -36,6 +36,19 @@ jobs:
   validate:
     name: Validate
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: taker_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -58,6 +71,16 @@ jobs:
 
       - name: Build server
         run: npm run build
+
+      - name: Run migrations
+        run: npm run typeorm -- migration:run
+        env:
+          NODE_ENV: local
+
+      - name: Check migrations match entities
+        run: npm run typeorm -- migration:generate --check src/services/database/migrations/Drift
+        env:
+          NODE_ENV: local
 
       - name: Typecheck infra
         run: npm run build
@@ -119,6 +142,9 @@ jobs:
       - name: CDK bootstrap
         run: npx cdk bootstrap aws://${{ secrets.CLOUD_ACCOUNT_ID }}/${{ secrets.CLOUD_REGION }} --require-approval never
         working-directory: infra
+
+      - name: Run migrations
+        run: npm run typeorm -- migration:run
 
       - name: CDK deploy
         run: npx cdk deploy TakerServerStack --require-approval never

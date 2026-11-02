@@ -1,5 +1,4 @@
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { DataSource, DataSourceOptions } from "typeorm";
+import { DataSourceOptions } from "typeorm";
 import pg from "pg";
 
 import { User } from "../../modules/v1/users/users.entity";
@@ -9,7 +8,7 @@ import { Transaction } from "../../modules/v1/investments/topics/transactions/tr
 
 pg.types.setTypeParser(1700, (val: string) => parseFloat(val));
 
-export function typeOrmConfig(): TypeOrmModuleOptions {
+export function typeOrmConfig(): DataSourceOptions {
   return {
     type: "postgres",
     host: process.env.DB_HOST ?? "localhost",
@@ -26,28 +25,5 @@ export function typeOrmConfig(): TypeOrmModuleOptions {
       Snapshot,
       Transaction,
     ],
-    migrations: [],
-    subscribers: [],
   };
-}
-
-export async function dataSourceFactory(
-  options?: DataSourceOptions
-): Promise<DataSource> {
-  if (!options) throw new Error("DataSource options are required");
-  const dataSource = await new DataSource(options).initialize();
-
-  if (process.env.NODE_ENV === "local") {
-    const schemas = new Set(
-      dataSource.entityMetadatas
-        .map((metadata) => metadata.schema)
-        .filter((schema): schema is string => !!schema)
-    );
-    for (const schema of schemas) {
-      await dataSource.query(`CREATE SCHEMA IF NOT EXISTS "${schema}"`);
-    }
-    await dataSource.synchronize();
-  }
-
-  return dataSource;
 }
